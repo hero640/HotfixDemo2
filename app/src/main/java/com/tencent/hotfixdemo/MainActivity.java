@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void clickLogin() {
         String useName = getUserName();
-        if (useName.equals("123")) {
+        if (useName != null && useName.equals("123")) {
             Toast.makeText(this,"登录成功",Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this,"登录失败",Toast.LENGTH_LONG).show();

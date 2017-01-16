@@ -34,10 +34,15 @@ android {
     signingConfigs {
         release {
             try {
-                storeFile file("${release.storeFile}")
-                storePassword "${release.storePassword}"
-                keyAlias "${release.keyAlias}"
-                keyPassword "${release.keyPassword}"
+//                storeFile file("${release.storeFile}")
+//                storePassword "${release.storePassword}"
+//                keyAlias "${release.keyAlias}"
+//                keyPassword "${release.keyPassword}"
+
+                storeFile file("D:/githubAsKey/release.jks")
+                storePassword "admin12345"
+                keyAlias "admin12345"
+                keyPassword "admin12345"
             } catch (ex) {
                 throw new InvalidUserDataException(ex.toString())
             }
