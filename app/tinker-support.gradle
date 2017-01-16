@@ -1,0 +1,62 @@
+apply plugin: 'com.tencent.bugly.tinker-support'
+
+// 定义旧基准包的路径
+def baseApkPath = file("${buildDir}/bakApk/")
+
+// 基准包名称
+def baseApkFileName = "app-release.apk"
+
+// 基准包混淆文件
+def baseApkProMappingFileName = "app-release-mapping.txt"
+
+// 基准包资源文件
+def baseApkResMappingFileName = "app-release-R.txt"
+
+/**
+ * 插件参数配置
+ */
+tinkerSupport {
+    // 开启tinker-support插件，默认值true
+    enable = false
+
+    // 是否编译完成后，归档apk到指定目录，默认值false
+    autoBackupApk = false
+
+    // 指定归档目录，默认值当前module的子目录tinker
+     backupApkDir = 'tinker'
+
+    // 是否启用覆盖tinkerPatch配置功能，默认值false
+    // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
+    overrideTinkerPatchConfiguration = true
+
+    // 编译补丁包时，必需指定基线版本的apk，默认值为空
+    // 如果为空，则表示不是进行补丁包的编译
+    // @{link tinkerPatch.oldApk }
+    baseApk = "${baseApkPath}/${baseApkFileName}"
+
+    // 对应tinker插件applyMapping
+    baseApkProguardMapping = "${baseApkPath}/${baseApkProMappingFileName}"
+
+    // 对应tinker插件applyResourceMapping
+    baseApkResourceMapping = "${baseApkPath}/${baseApkResMappingFileName}"
+
+    // 基线版本和补丁版本都需要修改这个参数，唯一标识当前版本
+    tinkerId = "1.0.0.0-base" //getTinkerId()
+
+    // 是否开启代理Application，设置之后无须改造Application，默认为false
+//    enableProxyApplication = false
+}
+
+
+
+def getTinkerId() {
+    try {
+        String gitRev = 'git rev-parse --short HEAD'.execute(null, project.rootDir).text.trim()
+        if (gitRev == null) {
+            throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
+        }
+        return gitRev
+    } catch (Exception e) {
+        throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
+    }
+}
