@@ -1,4 +1,4 @@
-package com.tencent.hotfixdemo;
+package com.yihua99.hotfixdemo;
 
 import org.junit.Test;
 

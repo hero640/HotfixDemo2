@@ -1,4 +1,4 @@
-package com.tencent.hotfixdemo;
+package com.yihua99.hotfixdemo;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

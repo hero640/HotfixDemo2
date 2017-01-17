@@ -1,8 +1,27 @@
 apply plugin: 'com.tencent.bugly.tinker-support'
 
-def bakPath = file("${buildDir}/bakApk/")
+// 定义备份的文件目录
+def bakBasePath = file("${buildDir}/bakApk/")
 
-def appName = "app-0111-15-18-41"
+// 基准文件目录（需要修复的文件目录）
+def appReleasePath = "app-0117-18-16-46"
+
+def appReleaseName = "app-release.apk"
+def appReleaseMapping = "app-release-mapping.txt"
+def appReleaseRes = "app-release-R.txt"
+
+def getTinkerId() {
+    try {
+        String gitRev = 'git rev-parse --short HEAD'.execute(null, project.rootDir).text.trim()
+        if (gitRev == null) {
+            throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
+        }
+        return gitRev
+    } catch (Exception e) {
+        throw new GradleException("can't get git rev, you should add git to system path or just input test value, such as 'testTinkerId'")
+    }
+}
+
 
 /**
  * 对于插件各参数的详细解析请参考
@@ -10,29 +29,69 @@ def appName = "app-0111-15-18-41"
 tinkerSupport {
 
     // 开启tinker-support插件，默认值true
-    enable = false
+    enable = true
 
     // 指定归档目录，默认值当前module的子目录tinker
-//    autoBackupApkDir = "${bakPath}"
+    autoBackupApkDir = "${bakBasePath}"
 
     // 是否启用覆盖tinkerPatch配置功能，默认值false
     // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
-//    overrideTinkerPatchConfiguration = true
+    overrideTinkerPatchConfiguration = true
 
     // 编译补丁包时，必需指定基线版本的apk，默认值为空
     // 如果为空，则表示不是进行补丁包的编译
     // @{link tinkerPatch.oldApk }
-//    baseApk =  "${bakPath}/${appName}/app-release.apk"
+    baseApk =  "${bakBasePath}/${appReleasePath}/${appReleaseName}"
 
     // 对应tinker插件applyMapping
-//    baseApkProguardMapping = "${bakPath}/${appName}/app-release-mapping.txt"
-//
-//    // 对应tinker插件applyResourceMapping
-//    baseApkResourceMapping = "${bakPath}/${appName}/app-release-R.txt"
-//
-//    // 唯一标识当前版本
-    tinkerId = "1.0.1-base"
-//
-//    // 是否开启代理Application，设置之后无须改造Application，默认为false
-//    enableProxyApplication = false
+    baseApkProguardMapping = "${bakBasePath}/${appReleasePath}/${appReleaseMapping}"
+
+    // 对应tinker插件applyResourceMapping
+    baseApkResourceMapping = "${bakBasePath}/${appReleasePath}/${appReleaseRes}"
+
+    // tinkerId（唯一性）
+    tinkerId = "1.0.0-patch"//getTinkerId()
+
+    // 是否开启代理Application，设置之后无须改造Application
+    enableProxyApplication = false
+}
+
+
+/**
+ * 一般来说,我们无需对下面的参数做任何的修改
+ * 对于各参数的详细介绍请参考:
+ * https://github.com/Tencent/tinker/wiki/Tinker-%E6%8E%A5%E5%85%A5%E6%8C%87%E5%8D%97
+ */
+tinkerPatch {
+    tinkerEnable = true
+    //oldApk ="${bakBasePath}/${appReleasePath}/app-release.apk"
+    ignoreWarning = false
+    useSign = true
+    dex {
+        dexMode = "jar"
+        pattern = ["classes*.dex"]
+        loader = []
+    }
+    lib {
+        pattern = ["lib/*/*.so"]
+    }
+
+    res {
+        pattern = ["res/*", "r/*", "assets/*", "resources.arsc", "AndroidManifest.xml"]
+        ignoreChange = []
+        largeModSize = 100
+    }
+
+    packageConfig {
+    }
+    sevenZip {
+        zipArtifact = "com.tencent.mm:SevenZip:1.1.10"
+//        path = "/usr/local/bin/7za"
+    }
+    buildConfig {
+        keepDexApply = false
+        //tinkerId = "1.0.1-patch"
+        //applyMapping = "${bakBasePath}/${appReleasePath}/app-release-mapping.txt" //  可选，设置mapping文件，建议保持旧apk的proguard混淆方式
+        //applyResourceMapping = "${bakBasePath}/${appReleasePath}/app-release-R.txt" // 可选，设置R.txt文件，通过旧apk文件保持ResId的分配
+    }
 }

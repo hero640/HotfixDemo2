@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">HotfixDemo</string>
     <string name="hello_world">hello,tencent</string>
-    <string name="hello_world1">世界，你好2</string>
+    <string name="hello_world2">hello,world</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.tencent.hotfixdemo.app;
+package com.yihua99.hotfixdemo.app;
 
 import android.app.Application;
 import android.content.Context;
@@ -17,7 +17,7 @@ public class MyApplication extends TinkerApplication  {
 
     public MyApplication() {
         super(ShareConstants.TINKER_ENABLE_ALL,
-                "com.tencent.hotfixdemo.app.MyApplicationLike",
+                "com.yihua99.hotfixdemo.app.MyApplicationLike",
                 "com.tencent.tinker.loader.TinkerLoader",
                 false);
     }

@@ -1,4 +1,4 @@
-package com.tencent.hotfixdemo;
+package com.yihua99.hotfixdemo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -6,8 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-//import com.tencent.tinker.loader.app.TinkerApplication;
-//import com.tencent.tinker.loader.app.DefaultApplicationLike;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -40,8 +38,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void clickLogin() {
-        String useName = getUserName();
-        if (useName != null && useName.equals("123")) {
+        String userName = getUserName();
+        if (userName != null && userName.equals("123")) {
             Toast.makeText(this,"登录成功",Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(this,"登录失败",Toast.LENGTH_LONG).show();
