@@ -1,14 +1,18 @@
 apply plugin: 'com.tencent.bugly.tinker-support'
 
 // 定义备份的文件目录
-def bakBasePath = file("${buildDir}/bakApk/")
+//def bakBasePath = file("${buildDir}/bakApk/")
+def bakBasePath = file("F:/bakApk/")
 
 // 基准文件目录（需要修复的文件目录）
-def appReleasePath = "app-0117-18-16-46"
+def appReleasePath = "app-0123-10-25-26"
 
 def appReleaseName = "app-release.apk"
 def appReleaseMapping = "app-release-mapping.txt"
 def appReleaseRes = "app-release-R.txt"
+
+// 编译基准包和pathch包的时候记得修改
+def TINKER_ID = "1.1.6-patch"
 
 def getTinkerId() {
     try {
@@ -25,35 +29,52 @@ def getTinkerId() {
 
 /**
  * 对于插件各参数的详细解析请参考
+ * https://bugly.qq.com/docs/user-guide/instruction-manual-android-hotfix/?v=20170113033321
  */
 tinkerSupport {
 
     // 开启tinker-support插件，默认值true
     enable = true
 
-    // 指定归档目录，默认值当前module的子目录tinker
+    // 指定归档目录，编译完成之后会将apk包、混淆文件、资源文件等copy到该目录下
+    // 默认值当前module的子目录tinker
     autoBackupApkDir = "${bakBasePath}"
 
     // 是否启用覆盖tinkerPatch配置功能，默认值false
     // 开启后tinkerPatch配置不生效，即无需添加tinkerPatch
     overrideTinkerPatchConfiguration = true
 
-    // 编译补丁包时，必需指定基线版本的apk，默认值为空
+    // 对应tinker插件oldApk，编译补丁包时，必需指定基线版本的apk，默认值为空
     // 如果为空，则表示不是进行补丁包的编译
-    // @{link tinkerPatch.oldApk }
     baseApk =  "${bakBasePath}/${appReleasePath}/${appReleaseName}"
 
-    // 对应tinker插件applyMapping
+    // 对应tinker插件applyMapping可选参数；在编译新的apk时候，
+    // 我们希望通过保持旧apk的proguard混淆方式，从而减少补丁包的大小。
+    // 这个只是推荐的，但设置applyMapping会影响任何的assemble编译
     baseApkProguardMapping = "${bakBasePath}/${appReleasePath}/${appReleaseMapping}"
 
-    // 对应tinker插件applyResourceMapping
+    // 对应tinker插件applyResourceMapping，在编译新的apk时候，
+    // 我们希望通过旧apk的R.txt文件保持ResId的分配，这样不仅可以减少补丁包的大小，
+    // 同时也避免由于ResId改变导致remote view异常
     baseApkResourceMapping = "${bakBasePath}/${appReleasePath}/${appReleaseRes}"
 
-    // tinkerId（唯一性）
-    tinkerId = "1.0.0-patch"//getTinkerId()
+    // tinkerId（唯一性）,必须填写
+    tinkerId = TINKER_ID //getTinkerId()
 
     // 是否开启代理Application，设置之后无须改造Application
     enableProxyApplication = false
+
+    // 若满足ignoreChange的pattern，在编译时会忽略该文件的新增、删除与修改。支持*、?通配符，必须使用'/'分割。
+//    resIgnoreChange = ["assets/channel.ini","assets/*_meta.txt"]
+
+//    libPattern = ["jniLibs/*/*.so","libs/*/*.so"]
+//
+//    resPattern = ["res/*", "r/*", "assets/*", "resources.arsc", "AndroidManifest.xml"]
+//
+//    // 对于修改的资源，如果大于largeModSize，我们将使用bsdiff算法。
+//    // 这可以降低补丁包的大小，但是会增加合成时的复杂度。默认大小为100kb
+//    resLargeModSize = 100
+
 }
 
 

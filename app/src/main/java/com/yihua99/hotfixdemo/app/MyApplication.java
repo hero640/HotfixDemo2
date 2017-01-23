@@ -22,6 +22,4 @@ public class MyApplication extends TinkerApplication  {
                 false);
     }
 
-
-
 }

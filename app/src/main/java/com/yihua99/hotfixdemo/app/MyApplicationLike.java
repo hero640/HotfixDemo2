@@ -20,7 +20,24 @@ import com.tencent.tinker.loader.app.DefaultApplicationLike;
 
 public class MyApplicationLike extends DefaultApplicationLike {
 
+
+    static {
+        System.loadLibrary("app");
+    }
+
+
     private static final String TAG = "MyApplicationLike";
+
+    private static Application sIntance;
+
+    public static Application getApplicationInstance() {
+        return sIntance;
+    }
+
+    public static Context getContext() {
+        return getApplicationInstance().getBaseContext();
+    }
+
 
     public MyApplicationLike(Application application, int tinkerFlags, boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime, long applicationStartMillisTime, Intent tinkerResultIntent, Resources[] resources, ClassLoader[] classLoader, AssetManager[] assetManager) {
         super(application, tinkerFlags, tinkerLoadVerifyFlag, applicationStartElapsedTime, applicationStartMillisTime, tinkerResultIntent, resources, classLoader, assetManager);
@@ -32,6 +49,9 @@ public class MyApplicationLike extends DefaultApplicationLike {
         // 这里实现SDK初始化，appId替换成你的在Bugly平台申请的appId
         Bugly.init(getApplication(), "d979f75836", true);
         Log.d(TAG,"onCreate");
+        sIntance = getApplication();
+
+        loadModifySoLib();
     }
 
 
@@ -46,6 +66,17 @@ public class MyApplicationLike extends DefaultApplicationLike {
         // TinkerManager.installTinker(this); 替换成下面Bugly提供的方法
         Beta.installTinker(this);
         Log.d(TAG,"onBaseContextAttached");
+    }
+
+    /**
+     * 加载有修改的so
+     */
+    private void loadModifySoLib() {
+        Log.e("MyApplicationLike","loadModifySoLib");
+        Beta.loadArmLibrary(getContext(),"app");
+
+        // 设置是开发设备
+        Bugly.setIsDevelopmentDevice(getContext(),true);
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
